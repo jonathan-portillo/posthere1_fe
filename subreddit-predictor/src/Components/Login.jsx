@@ -2,43 +2,14 @@ import React, { useState, useEffect } from "react";
 import * as yup from "yup";
 import { connect } from "react-redux";
 import { login, fetchPrev } from "../actions/";
-import { makeStyles } from "@material-ui/core/styles";
-import { useHistory } from "react-router-dom";
-import TextField from "@material-ui/core/TextField";
-import Button from "@material-ui/core/Button";
-import styled from "styled-components";
-
-const useStyles = makeStyles((theme) => ({
-  root: {
-    "& > *": {
-      margin: theme.spacing(1),
-      width: "25ch",
-    },
-  },
-}));
-
-const Container = styled.div`
-  width: 40%;
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  margin: 10% 0 0 30%;
-`;
-
-const ErrorMessage = styled.p`
-  font-size: 0.8rem;
-  color: red;
-  text-align: center;
-  margin-left: 27%;
-`;
-
-const Info = styled.h2`
-  color: #0079d3;
-  font-weight: bold;
-`;
+import { useNavigate } from "react-router-dom";
+import TextField from "@mui/material/TextField";
+import Button from "@mui/material/Button";
+import { Link } from "react-router-dom";
+import Logo from "./Logo";
+import AuthPanel from "./AuthPanel";
 
 const Login = (props) => {
-  const classes = useStyles();
 
   const [loginState, setLoginState] = useState({
     username: "",
@@ -50,7 +21,7 @@ const Login = (props) => {
     password: "",
   });
 
-  const { history } = useHistory();
+  const navigate = useNavigate();
 
   const [disableButton, setDisableButton] = useState(true);
 
@@ -100,58 +71,65 @@ const Login = (props) => {
   }, [loginState]);
 
   return (
-    <Container>
-      <Info>Sign In </Info>
-      <form className={classes.root}>
-        <label htmlFor="username">
-          Username:
+    <div className="auth-split">
+      <AuthPanel variant="login" />
+      <div className="auth-card">
+        <Logo className="logo" />
+        <h1>Welcome back</h1>
+        <p className="subtitle">Sign in to your Post Match account.</p>
+        <form className="auth-form">
           <TextField
             id="username"
-            variant="standard"
-            type="text"
+            label="Username"
             name="username"
+            type="text"
+            autoComplete="username"
+            fullWidth
             value={loginState.username}
-            placeholder="Create your Username"
             onChange={loginInfo}
+            error={errors.username.length > 0}
+            helperText={errors.username}
           />
-        </label>
-        <label htmlFor="password">
-          Password:
           <TextField
             id="password"
-            variant="standard"
-            type="password"
+            label="Password"
             name="password"
+            type="password"
+            autoComplete="current-password"
+            fullWidth
             value={loginState.password}
-            placeholder="Create your password"
             onChange={loginInfo}
+            error={errors.password.length > 0}
+            helperText={errors.password}
           />
-        </label>
-        <Button
-          variant="contained"
-          color="primary"
-          disabled={disableButton}
-          onClick={async (e) => {
-            e.preventDefault();
-            await props.login(loginState);
-            //props.fetchPrev(props.userId);
-            props.history.push("/dashboard");
-          }}
-          type="submit"
-        >
-          Sign In
-        </Button>
-        {errors.username.length > 0 ? (
-          <ErrorMessage>{errors.username}</ErrorMessage>
-        ) : null}
-        {errors.password.length > 0 ? (
-          <ErrorMessage>{errors.password}</ErrorMessage>
-        ) : null}
-        {props.error && <ErrorMessage>There was an error.</ErrorMessage>}
-      </form>
-    </Container>
+        {props.error && (
+          <div className="auth-alert">
+            We couldn't sign you in. Check your details and try again.
+          </div>
+        )}
+          <Button
+            variant="contained"
+            color="primary"
+            size="large"
+            disabled={disableButton}
+            type="submit"
+            onClick={async (e) => {
+              e.preventDefault();
+              await props.login(loginState);
+              navigate("/dashboard");
+            }}
+          >
+            Sign In
+          </Button>
+        </form>
+        <p className="auth-switch">
+          Don't have an account? <Link to="/signup">Sign up</Link>
+        </p>
+      </div>
+    </div>
   );
 };
+
 const mapStateToProps = (state) => {
   return {
     isFetching: state.isFetching,

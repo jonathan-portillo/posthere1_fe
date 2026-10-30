@@ -22,7 +22,7 @@ export const LOGOUT = "LOGOUT";
 export const signUp = (userInfo) => (dispatch) => {
   dispatch({ type: SIGNUP_START });
   axiosWithAuth()
-    .post("https://redditposthere.herokuapp.com/api/auth/register", userInfo)
+    .post("/api/auth/register", userInfo)
     .then((res) => {
       dispatch({ type: SIGNUP_SUCCESS, payload: res.data });
       console.log(res.data);
@@ -37,7 +37,7 @@ export const signUp = (userInfo) => (dispatch) => {
 export const login = (credentials) => (dispatch) => {
   dispatch({ type: LOGIN_START });
   axiosWithAuth()
-    .post("https://redditposthere.herokuapp.com/api/auth/login", credentials)
+    .post("/api/auth/login", credentials)
     .then((res) => {
       dispatch({ type: LOGIN_SUCCESS, payload: res.data });
       localStorage.setItem("token", res.data.token);
@@ -61,7 +61,7 @@ export const fetchSubs = (input) => (dispatch) => {
   console.log(input);
   axiosWithAuth()
     .post(
-      `https://redditposthere.herokuapp.com/api/posts/${localStorage.getItem(
+      `/api/posts/${localStorage.getItem(
         "id"
       )}`,
       input
@@ -79,9 +79,9 @@ export const fetchSubs = (input) => (dispatch) => {
 //FETCH PREVIOS POST
 export const fetchPrev = (id) => (dispatch) => {
   axiosWithAuth()
-    .get(`https://redditposthere.herokuapp.com/api/posts/${id}`)
+    .get(`/api/posts/${id}`)
     .then((res) => {
-      dispatch({ action: SET_PREV_POST, payload: res.data });
+      dispatch({ type: SET_PREV_POST, payload: res.data });
       console.log(res);
     })
     .catch((err) => {
@@ -91,7 +91,7 @@ export const fetchPrev = (id) => (dispatch) => {
 
 export const deletePost = (postId) => (dispatch) => {
   axiosWithAuth()
-    .delete(`https://redditposthere.herokuapp.com/api/posts/${postId}`)
+    .delete(`/api/posts/${postId}`)
     .then((res) => {})
     .catch((err) => {
       console.log(err);
